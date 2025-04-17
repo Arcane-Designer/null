@@ -58,14 +58,14 @@ h2 {
   background: #000;
   align-items: center;
   justify-content: center;
-  z-index: 6;
   flex-direction: column;
+  z-index: 6;
 }
 
-/* static noise layer in overlay */
+/* static‐noise canvas in overlay */
 #staticCanvas {
-  z-index: 6;
   width: 100%; height: 100%;
+  z-index: 6;
 }
 
 /* manifesto text, hidden at first */
