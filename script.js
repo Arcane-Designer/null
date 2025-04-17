@@ -1,6 +1,6 @@
 // — grab canvases & elements —
 const dotCanvas    = document.getElementById('dotCanvas');
-const maskCanvas   = document.getElementById('maskCanvas');
+const cursorCanvas = document.getElementById('cursorCanvas');
 const staticCanvas = document.getElementById('staticCanvas');
 const titleEl      = document.getElementById('title');
 const overlay      = document.getElementById('overlay');
@@ -8,19 +8,19 @@ const overlayText  = document.getElementById('overlay-text');
 const taglineEl    = document.getElementById('tagline');
 
 const dctx = dotCanvas.getContext('2d');
-const mctx = maskCanvas.getContext('2d');
+const cctx = cursorCanvas.getContext('2d');
 const sctx = staticCanvas.getContext('2d');
 
 let particles = [];
 let staticInterval;
+let mouse = { x: -Infinity, y: -Infinity };
 
-// — resize canvases & init particle grid —
+// — resize canvases & init grid —
 function resize() {
   const w = window.innerWidth, h = window.innerHeight;
-  [dotCanvas, maskCanvas, staticCanvas].forEach(c => {
-    c.width  = w;
-    c.height = h;
-  });
+  dotCanvas.width    = w; dotCanvas.height    = h;
+  staticCanvas.width = w; staticCanvas.height = h;
+  cursorCanvas.width = 20; cursorCanvas.height = 20;
   initParticles();
 }
 window.addEventListener('resize', resize);
@@ -36,31 +36,24 @@ function initParticles() {
   }
 }
 
-// — animate dot grid, repel near cursor —
-let mouse = { x: -Infinity, y: -Infinity };
+// — animate dot grid & repel near cursor —
 window.addEventListener('mousemove', e => {
-  mouse.x = e.clientX;
-  mouse.y = e.clientY;
-  drawMask(mouse.x, mouse.y);
+  mouse.x = e.clientX; mouse.y = e.clientY;
+  drawCursor(mouse.x, mouse.y);
 });
-
 function animateParticles() {
   dctx.clearRect(0, 0, dotCanvas.width, dotCanvas.height);
   for (const p of particles) {
-    // gentle drift + spring back
+    // drift + spring-back
     p.vx += (Math.random() - 0.5) * 0.1 + (p.x0 - p.x) * 0.001;
     p.vy += (Math.random() - 0.5) * 0.1 + (p.y0 - p.y) * 0.001;
-    p.x += p.vx; 
-    p.y += p.vy;
-
-    // repel on proximity
+    p.x += p.vx; p.y += p.vy;
+    // repel
     const dx = p.x - mouse.x, dy = p.y - mouse.y;
     if (Math.hypot(dx, dy) < 100) {
       const ang = Math.atan2(dy, dx);
-      p.vx += Math.cos(ang) * 2;
-      p.vy += Math.sin(ang) * 2;
+      p.vx += Math.cos(ang) * 2; p.vy += Math.sin(ang) * 2;
     }
-
     dctx.fillStyle = 'rgba(200,200,200,0.5)';
     dctx.beginPath();
     dctx.arc(p.x, p.y, 2, 0, Math.PI * 2);
@@ -70,22 +63,23 @@ function animateParticles() {
 }
 animateParticles();
 
-// — black‑hole cursor mask —
-function drawMask(x, y) {
-  mctx.clearRect(0, 0, maskCanvas.width, maskCanvas.height);
-  // fill entire screen black
-  mctx.fillStyle = 'rgba(0,0,0,1)';
-  mctx.fillRect(0, 0, maskCanvas.width, maskCanvas.height);
-  // cut out a circular hole
-  mctx.globalCompositeOperation = 'destination-out';
-  const radius = 50;  // adjust for hole size
-  mctx.beginPath();
-  mctx.arc(x, y, radius, 0, Math.PI * 2);
-  mctx.fill();
-  mctx.globalCompositeOperation = 'source-over';
+// — draw static‑noise cursor —
+function drawCursor(x, y) {
+  // position canvas so it's centered on pointer
+  cursorCanvas.style.transform = `translate(${x - 10}px, ${y - 10}px)`;
+  // generate noise
+  const img = cctx.createImageData(20, 20);
+  for (let i = 0; i < img.data.length; i += 4) {
+    const v = Math.random() * 255;
+    img.data[i]     = v;
+    img.data[i + 1] = v;
+    img.data[i + 2] = v;
+    img.data[i + 3] = 255;
+  }
+  cctx.putImageData(img, 0, 0);
 }
 
-// — glitchy tagline effect —
+// — glitch tagline effect —
 const originalTag = taglineEl.innerText;
 function glitchTagline() {
   let out = '';
@@ -104,17 +98,15 @@ function drawStaticFrame() {
   const w = staticCanvas.width, h = staticCanvas.height;
   sctx.clearRect(0, 0, w, h);
   for (let i = 0; i < 5000; i++) {
-    const x = Math.random() * w;
-    const y = Math.random() * h;
+    const x = Math.random() * w, y = Math.random() * h;
     const g = Math.floor(Math.random() * 256);
     sctx.fillStyle = `rgb(${g},${g},${g})`;
     sctx.fillRect(x, y, 1, 1);
   }
 }
-
 titleEl.addEventListener('click', () => {
   if (overlay.style.display === 'flex') return;
-  overlay.style.display = 'flex';
+  overlay.style.display     = 'flex';
   overlayText.style.display = 'none';
   staticInterval = setInterval(drawStaticFrame, 50);
   setTimeout(() => {
@@ -122,10 +114,9 @@ titleEl.addEventListener('click', () => {
     overlayText.style.display = 'block';
   }, 800);
 });
-
 overlay.addEventListener('click', () => {
   overlay.style.display = 'none';
   sctx.clearRect(0, 0, staticCanvas.width, staticCanvas.height);
 });
 
-// — terminal input placeholder for future JS —
+// — terminal input placeholder —
