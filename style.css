@@ -1,0 +1,35 @@
+/* make everything full‑screen, dark, and hide the native cursor */
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #111;  /* dark grey background */
+  cursor: none;             /* hide system cursor */
+  overflow: hidden;
+}
+
+/* center the header */
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+/* the “Null.” text in plain white font */
+h1 {
+  color: #fff;
+  font-family: Arial, sans-serif;
+  font-size: 4rem;
+  font-weight: normal;
+}
+
+/* canvas sits on top but doesn’t block clicks */
+#noiseCanvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 10;
+  pointer-events: none;
+}
