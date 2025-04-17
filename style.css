@@ -1,40 +1,35 @@
 /* full‑screen dark, hide native cursor */
 html, body {
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  height: 100%;
+  margin: 0; padding: 0;
+  width: 100%; height: 100%;
   background-color: #111;
   cursor: none;
   overflow: hidden;
 }
 
-/* particle grid behind everything */
-#dotCanvas {
+/* make canvases ignore pointer events */
+#dotCanvas,
+#noiseCanvas,
+#staticCanvas {
   position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 1;
-}
-
-/* noise trails */
-#noiseCanvas {
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 2;
+  top: 0; left: 0;
   pointer-events: none;
 }
 
-/* header & tagline container */
+/* layering */
+#dotCanvas    { z-index: 1; }
+#noiseCanvas  { z-index: 2; }
+
+/* title container, centered near top */
 .container {
-  position: relative;
+  position: absolute;
+  top: 15%;
+  left: 50%;
+  transform: translateX(-50%);
   z-index: 3;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
-  height: 100%;
 }
 
 /* main title */
@@ -46,36 +41,35 @@ h1 {
   cursor: pointer;
 }
 
-/* glitchy tagline */
+/* tagline below title */
 h2 {
-  color: #fff;
+  color: #ccc;
   font-family: monospace, sans-serif;
   font-size: 1.5rem;
-  margin-top: 0.5rem;
+  margin: 0.5rem 0 0;
 }
 
-/* overlay covers all when active */
+/* overlay covers everything when active */
 #overlay {
+  display: none;
   position: fixed;
   top: 0; left: 0;
   width: 100%; height: 100%;
   background: #000;
-  display: none;
   align-items: center;
   justify-content: center;
   z-index: 6;
+  flex-direction: column;
 }
 
-/* static‐noise canvas in overlay */
+/* static noise layer in overlay */
 #staticCanvas {
-  position: absolute;
-  top: 0; left: 0;
   z-index: 6;
+  width: 100%; height: 100%;
 }
 
 /* manifesto text, hidden at first */
 #overlay-text {
-  position: relative;
   z-index: 7;
   color: #fff;
   font-family: Arial, sans-serif;
@@ -86,11 +80,10 @@ h2 {
   display: none;
 }
 
-/* terminal tab in corner */
+/* floating terminal tab in corner */
 #terminal-tab {
   position: fixed;
-  bottom: 20px;
-  left: 20px;
+  bottom: 20px; left: 20px;
   background: rgba(255,255,255,0.1);
   border: 1px solid rgba(255,255,255,0.2);
   padding: 5px 10px;
@@ -100,7 +93,7 @@ h2 {
   align-items: center;
 }
 
-/* input in tab */
+/* input styling */
 #terminal-input {
   background: transparent;
   border: none;
