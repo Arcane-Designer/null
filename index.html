@@ -7,11 +7,34 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+  <!-- particle grid and noise trails -->
+  <canvas id="dotCanvas"></canvas>
+  <canvas id="noiseCanvas"></canvas>
+
+  <!-- header + glitch tagline -->
   <div class="container">
-    <h1>Null.</h1>
+    <h1 id="title">Null.</h1>
+    <h2 id="tagline">Nothing speaks louder</h2>
   </div>
 
-  <!-- noise canvas and cursor script -->
+  <!-- overlay for manifesto -->
+  <div id="overlay">
+    <canvas id="staticCanvas"></canvas>
+    <div id="overlay-text">
+      <p>
+        In a world filled with noise, Null. stands for absence, digital decay, and the power of emptiness. 
+        It’s the space that speaks volumes, the silence that commands attention. Embrace the void—
+        where nothing truly speaks louder.
+      </p>
+    </div>
+  </div>
+
+  <!-- floating “terminal” tab -->
+  <div id="terminal-tab">/
+    <input type="text" id="terminal-input" placeholder="" />
+  </div>
+
   <script src="script.js"></script>
 </body>
 </html>
+
