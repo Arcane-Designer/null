@@ -82,6 +82,7 @@ h2 {
 
 /* floating terminal tab in corner */
 #terminal-tab {
+  color: #fff;             /* make the slash white */
   position: fixed;
   bottom: 20px; left: 20px;
   background: rgba(255,255,255,0.1);
